@@ -199,7 +199,7 @@ int main(void)
 	// Settings for driving the 7 segment display
 	DDRD  |= 0b11111111;	// Make PD0-7 an output (segments)
 	DDRC  |= 0b00111111; 	// Make PC0-3 an output	for driver transistors and PC4-PC5 output for current sensor 
-	PORTC |= 0xf;			// Make PC0-PC3 high to disable the PNP transistors
+	PORTC |= 0xf;           // Make PC0-PC3 high to disable the PNP transistors
 	
 	// Settings for input buttons
  	DDRB &= ~(1<<PINB2);	// Make Port D 2,3,4 an input for the buttons (set to 0)
@@ -208,18 +208,18 @@ int main(void)
 	PORTB |= (1<<PINB2) | (1<<PINB3) | (1<<PINB4);	// Enable pull-up resistors
 	
 	// Settings for timer
-	TCCR0A = (1<<WGM01); 							// Set CTC Bit
-	OCR0A  = (uint16_t)(F_CPU/1024.0 * 0.005);		// Reference for 0,005s: clock = 8MHz/1024 = 7812,5 pulses per second
-	TIMSK0 = (1<<OCIE0A);							// Interrupt when timer reference is reached
- 	TCCR0B = (1<<CS02) | (1<<CS00);					// Start at 1024 prescalar
+	TCCR0A = (1<<WGM01);                            // Set CTC Bit
+	OCR0A  = (uint16_t)(F_CPU/1024.0 * 0.005);      // Reference for 0,005s: clock = 8MHz/1024 = 7812,5 pulses per second
+	TIMSK0 = (1<<OCIE0A);                           // Interrupt when timer reference is reached
+ 	TCCR0B = (1<<CS02) | (1<<CS00);                 // Start at 1024 prescalar
  	
-	sei();											// Enable global interrupt 	 	
+	sei();                                          // Enable global interrupt 	 	
 	
 	setActiveSensorLed();	
 
 	while(1)
 	{		
-		if (debounce(PINB2)) {								// Debounced button press
+		if (debounce(PINB2)) {                      // Debounced button press
 			if (buttonWasPressed == 0) {					
 				// Switch the active sensor
 				if (activesensor == DS18B20_DQ_SENSOR1) {
