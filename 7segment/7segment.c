@@ -206,9 +206,6 @@ int main(void)
  	DDRB &= ~(1<<PINB4);
 	PORTB |= (1<<PINB2) | (1<<PINB3) | (1<<PINB4);	// Enable pull-up resistors
 	
-	// Enable interrupts for PORTB 
-	//init_pin_change_interrupt();
-	
 	// Settings for timer
 	TCCR0A = (1<<WGM01); 							// Set CTC Bit
 	OCR0A  = (uint16_t)(F_CPU/1024.0 * 0.005);		// Reference for 0,005s: clock = 8MHz/1024 = 7812,5 pulses per second
@@ -293,9 +290,9 @@ int main(void)
 					// Flash led
 					flashLed(PC5);
 				}
-				
+				  
 				setActiveSensorLed();							
-				buttonWasPressed = 1;	
+				buttonWasPressed = 1;	   
 			}
 									
 		} else {											// Button is not pressed
@@ -325,67 +322,9 @@ int main(void)
 			} else{
 				currentInterval++;
 				_delay_ms(INTERVAL_DELAY_MS);
-			}
-			
-
-			
+			}			
 		}
 	}
 	
 	return 0;
 }
-
-
-
-
-// Initialization function for the pin change interrupt service routine
-// void init_pin_change_interrupt() {
-// 	PCICR  |= (1<<PCIE0);							// Enable interrupt for PB0..PB7
-// 	PCMSK0 |= (1<<PINB2) | (1<<PINB3) | (1<<PINB4);	// Enable mask for pin PINB2..PINB4
-// }
-
-// Interrupt service routine for the button to switch to internal or external temperature sensor
-// ISR(PCINT0_vect){		
-// 		
-// 	if ((PINB & (1<<PINB2))==0){		
-// 		
-// 		// Switch the active sensor
-// 		if (activesensor == DS18B20_DQ_SENSOR1) {
-// 			activesensor = DS18B20_DQ_SENSOR2;
-// 		} else {
-// 			activesensor = DS18B20_DQ_SENSOR1;
-// 		}
-// 		
-// 		clearSegments();
-// 		setActiveSensorLed();
-// 		getTemperature();
-// 		
-// 	} else if ((PINB & (1<<PINB3))==0){
-// 		
-// 		// Bounce delay
-// 		
-// 		//_delay_us(1000);	
-// 		
-// 		// Change the displaymode
-// 		minmaxbounce++;
-// 		
-// 		switch (displayMode)
-// 		{
-// 			case currentTemperature:
-// 				displayMode = minimumTemperature;
-// 				clearSegments();
-// 				setTemperature(minmaxbounce);
-// 				break;
-// 			case minimumTemperature:
-// 				displayMode = maximumTemperature;
-// 				clearSegments();
-// 				setTemperature(minmaxbounce);
-// 				break;
-// 			case maximumTemperature:
-// 				displayMode = currentTemperature;
-// 				break;
-// 			default:								
-// 				break;
-// 		}			
-// 	}	
-// }
