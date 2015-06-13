@@ -59,8 +59,8 @@ const int8_t numbers [13] =
 	0b10000000, // 8
 	0b10010000, // 9
 	0b01111111, // DP
-	0b10111111,	// Negative sign
-	0b11111111	// Clear
+	0b10111111, // Negative sign
+	0b11111111  // Clear
 };
 
 void digit(uint8_t number, uint8_t pin)
@@ -168,6 +168,7 @@ void getTemperature() {
 }
 
 void setTemperature(double temperature) {
+	// Do some corrections
 	temperature *= 10;
 	if (temperature < 0){
 		temperature *= -1;
@@ -229,7 +230,7 @@ int main(void)
 				
 				clearSegments();
 				setActiveSensorLed();
-				getTemperature();
+				getTemperature(); 
 				
 				buttonWasPressed = 1;
 			}
@@ -295,12 +296,15 @@ int main(void)
 				buttonWasPressed = 1;	   
 			}
 									
-		} else {											// Button is not pressed
-			buttonWasPressed = 0;							// Update state		
+		} else {
+			// Button is not pressed and therefore update the status 											
+			buttonWasPressed = 0;							
 			
 			if (displayMode == currentTemperature && currentInterval >= INTERVAL){	
-				getTemperature();							// Get next temperature values
+				// Get next temperature values
+				getTemperature();							
 				
+				// Reset the interval
 				currentInterval = 0;
 				
 				// Store the min and max for both sensors
@@ -319,7 +323,7 @@ int main(void)
 					maximumTemperatureSensor2 = t1;
 				}
 				
-			} else{
+			} else {
 				currentInterval++;
 				_delay_ms(INTERVAL_DELAY_MS);
 			}			
