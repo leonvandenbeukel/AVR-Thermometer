@@ -16,7 +16,7 @@
 #define CLEAR 12
 #define TEMPNOTSET 88.8
 
-#define DEBOUNCE_TIME 350
+#define DEBOUNCE_TIME 350	// TODO: Check if between 4 and 20ms is better
 #define INTERVAL 30
 #define INTERVAL_DELAY_MS 100
 volatile uint16_t currentInterval = 0;
@@ -150,7 +150,7 @@ void clearSegments(){
 }
 
 // There are two leds that indicate which sensor is active
-void setActiveSensorLed() {
+void setActiveSensorLed() {	
 	if (activesensor == DS18B20_DQ_SENSOR1) {
 		PORTC |= (1<<PC4);
 		PORTC &= ~(1<<PC5);
@@ -191,6 +191,7 @@ void flashLed(uint8_t led){
 // Main loop
 int main(void)
 {
+	
 	uint8_t buttonWasPressed = 0;
 	
 	// Disable clock division (prescaler)
@@ -198,7 +199,7 @@ int main(void)
 	
 	// Settings for driving the 7 segment display
 	DDRD  |= 0b11111111;	// Make PD0-7 an output (segments)
-	DDRC  |= 0b00111111; 	// Make PC0-3 an output	for driver transistors and PC4-PC5 output for current sensor 
+	DDRC  |= 0b00111111; 	// Make PC0-3 an output	for driver transistors and PC4-PC5 output for current sensor leds
 	PORTC |= 0xf;           // Make PC0-PC3 high to disable the PNP transistors
 	
 	// Settings for input buttons
@@ -218,7 +219,7 @@ int main(void)
 	setActiveSensorLed();	
 
 	while(1)
-	{		
+	{				
 		if (debounce(PINB2)) {                      // Debounced button press
 			if (buttonWasPressed == 0) {					
 				// Switch the active sensor

@@ -99,7 +99,7 @@ Disassembly of section .text:
   a2:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 000000a6 <digit>:
-	0b11111111	// Clear
+	0b11111111  // Clear
 };
 
 void digit(uint8_t number, uint8_t pin)
@@ -492,7 +492,7 @@ void clearSegments(){
 }
 
 // There are two leds that indicate which sensor is active
-void setActiveSensorLed() {
+void setActiveSensorLed() {	
 	if (activesensor == DS18B20_DQ_SENSOR1) {
  328:	80 91 1f 01 	lds	r24, 0x011F
  32c:	81 11       	cpse	r24, r1
@@ -520,6 +520,7 @@ void setTemperature(double temperature) {
  33e:	df 92       	push	r13
  340:	ef 92       	push	r14
  342:	ff 92       	push	r15
+	// Do some corrections
 	temperature *= 10;
  344:	20 e0       	ldi	r18, 0x00	; 0
  346:	30 e0       	ldi	r19, 0x00	; 0
@@ -643,11 +644,11 @@ void clock_prescale_set(clock_div_t __x)
  3da:	8a b1       	in	r24, 0x0a	; 10
  3dc:	8f ef       	ldi	r24, 0xFF	; 255
  3de:	8a b9       	out	0x0a, r24	; 10
-	DDRC  |= 0b00111111; 	// Make PC0-3 an output	for driver transistors and PC4-PC5 output for current sensor 
+	DDRC  |= 0b00111111; 	// Make PC0-3 an output	for driver transistors and PC4-PC5 output for current sensor leds
  3e0:	87 b1       	in	r24, 0x07	; 7
  3e2:	8f 63       	ori	r24, 0x3F	; 63
  3e4:	87 b9       	out	0x07, r24	; 7
-	PORTC |= 0xf;			// Make PC0-PC3 high to disable the PNP transistors
+	PORTC |= 0xf;           // Make PC0-PC3 high to disable the PNP transistors
  3e6:	88 b1       	in	r24, 0x08	; 8
  3e8:	8f 60       	ori	r24, 0x0F	; 15
  3ea:	88 b9       	out	0x08, r24	; 8
@@ -665,36 +666,36 @@ void clock_prescale_set(clock_div_t __x)
  3f6:	85 b9       	out	0x05, r24	; 5
 	
 	// Settings for timer
-	TCCR0A = (1<<WGM01); 							// Set CTC Bit
+	TCCR0A = (1<<WGM01);                            // Set CTC Bit
  3f8:	82 e0       	ldi	r24, 0x02	; 2
  3fa:	84 bd       	out	0x24, r24	; 36
-	OCR0A  = (uint16_t)(F_CPU/1024.0 * 0.005);		// Reference for 0,005s: clock = 8MHz/1024 = 7812,5 pulses per second
+	OCR0A  = (uint16_t)(F_CPU/1024.0 * 0.005);      // Reference for 0,005s: clock = 8MHz/1024 = 7812,5 pulses per second
  3fc:	97 e2       	ldi	r25, 0x27	; 39
  3fe:	97 bd       	out	0x27, r25	; 39
-	TIMSK0 = (1<<OCIE0A);							// Interrupt when timer reference is reached
+	TIMSK0 = (1<<OCIE0A);                           // Interrupt when timer reference is reached
  400:	80 93 6e 00 	sts	0x006E, r24
- 	TCCR0B = (1<<CS02) | (1<<CS00);					// Start at 1024 prescalar
+ 	TCCR0B = (1<<CS02) | (1<<CS00);                 // Start at 1024 prescalar
  404:	85 e0       	ldi	r24, 0x05	; 5
  406:	85 bd       	out	0x25, r24	; 37
  	
-	sei();											// Enable global interrupt 	 	
+	sei();                                          // Enable global interrupt 	 	
  408:	78 94       	sei
 	
 	setActiveSensorLed();	
  40a:	0e 94 94 01 	call	0x328	; 0x328 <setActiveSensorLed>
-}
 
 // Main loop
 int main(void)
 {
+	
 	uint8_t buttonWasPressed = 0;
  40e:	f1 2c       	mov	r15, r1
-				setActiveSensorLed();							
 				buttonWasPressed = 1;	   
 			}
 									
-		} else {											// Button is not pressed
-			buttonWasPressed = 0;							// Update state		
+		} else {
+			// Button is not pressed and therefore update the status 											
+			buttonWasPressed = 0;							
  410:	d0 e0       	ldi	r29, 0x00	; 0
 					// Flash led
 					flashLed(PC5);
@@ -712,19 +713,19 @@ int main(void)
 				buttonWasPressed = 1;
  416:	fc 2e       	mov	r15, r28
  418:	01 c0       	rjmp	.+2      	; 0x41c <main+0x54>
-				setActiveSensorLed();							
 				buttonWasPressed = 1;	   
 			}
 									
-		} else {											// Button is not pressed
-			buttonWasPressed = 0;							// Update state		
+		} else {
+			// Button is not pressed and therefore update the status 											
+			buttonWasPressed = 0;							
  41a:	fd 2e       	mov	r15, r29
 	
 	setActiveSensorLed();	
 
 	while(1)
-	{		
-		if (debounce(PINB2)) {								// Debounced button press
+	{				
+		if (debounce(PINB2)) {                      // Debounced button press
  41c:	82 e0       	ldi	r24, 0x02	; 2
  41e:	0e 94 5c 01 	call	0x2b8	; 0x2b8 <debounce>
  422:	88 23       	and	r24, r24
@@ -749,7 +750,7 @@ int main(void)
  43c:	0e 94 7b 01 	call	0x2f6	; 0x2f6 <clearSegments>
 				setActiveSensorLed();
  440:	0e 94 94 01 	call	0x328	; 0x328 <setActiveSensorLed>
-				getTemperature();
+				getTemperature(); 
  444:	0e 94 c7 01 	call	0x38e	; 0x38e <getTemperature>
 				
 				buttonWasPressed = 1;
@@ -961,10 +962,10 @@ int main(void)
 				buttonWasPressed = 1;	   
  578:	fc 2e       	mov	r15, r28
  57a:	50 cf       	rjmp	.-352    	; 0x41c <main+0x54>
-			}
 									
-		} else {											// Button is not pressed
-			buttonWasPressed = 0;							// Update state		
+		} else {
+			// Button is not pressed and therefore update the status 											
+			buttonWasPressed = 0;							
 			
 			if (displayMode == currentTemperature && currentInterval >= INTERVAL){	
  57c:	80 91 1e 01 	lds	r24, 0x011E
@@ -975,9 +976,11 @@ int main(void)
  58c:	4e 97       	sbiw	r24, 0x1e	; 30
  58e:	08 f4       	brcc	.+2      	; 0x592 <main+0x1ca>
  590:	ab c0       	rjmp	.+342    	; 0x6e8 <main+0x320>
-				getTemperature();							// Get next temperature values
+				// Get next temperature values
+				getTemperature();							
  592:	0e 94 c7 01 	call	0x38e	; 0x38e <getTemperature>
 				
+				// Reset the interval
 				currentInterval = 0;
  596:	10 92 23 01 	sts	0x0123, r1
  59a:	10 92 22 01 	sts	0x0122, r1
@@ -1073,12 +1076,12 @@ int main(void)
  688:	d0 92 05 01 	sts	0x0105, r13
  68c:	e0 92 06 01 	sts	0x0106, r14
  690:	f0 92 07 01 	sts	0x0107, r15
-				setActiveSensorLed();							
 				buttonWasPressed = 1;	   
 			}
 									
-		} else {											// Button is not pressed
-			buttonWasPressed = 0;							// Update state		
+		} else {
+			// Button is not pressed and therefore update the status 											
+			buttonWasPressed = 0;							
  694:	fd 2e       	mov	r15, r29
 				}
 				
@@ -1113,19 +1116,19 @@ int main(void)
  6d8:	d0 92 01 01 	sts	0x0101, r13
  6dc:	e0 92 02 01 	sts	0x0102, r14
  6e0:	f0 92 03 01 	sts	0x0103, r15
-				setActiveSensorLed();							
 				buttonWasPressed = 1;	   
 			}
 									
-		} else {											// Button is not pressed
-			buttonWasPressed = 0;							// Update state		
+		} else {
+			// Button is not pressed and therefore update the status 											
+			buttonWasPressed = 0;							
  6e4:	fd 2e       	mov	r15, r29
  6e6:	9a ce       	rjmp	.-716    	; 0x41c <main+0x54>
 				} else if (t1 > maximumTemperatureSensor2 || maximumTemperatureSensor2 == TEMPNOTSET){
 					maximumTemperatureSensor2 = t1;
 				}
 				
-			} else{
+			} else {
 				currentInterval++;
  6e8:	80 91 22 01 	lds	r24, 0x0122
  6ec:	90 91 23 01 	lds	r25, 0x0123
@@ -1141,12 +1144,12 @@ int main(void)
  706:	e1 f7       	brne	.-8      	; 0x700 <main+0x338>
  708:	00 c0       	rjmp	.+0      	; 0x70a <main+0x342>
  70a:	00 00       	nop
-				setActiveSensorLed();							
 				buttonWasPressed = 1;	   
 			}
 									
-		} else {											// Button is not pressed
-			buttonWasPressed = 0;							// Update state		
+		} else {
+			// Button is not pressed and therefore update the status 											
+			buttonWasPressed = 0;							
  70c:	fd 2e       	mov	r15, r29
  70e:	86 ce       	rjmp	.-756    	; 0x41c <main+0x54>
 
